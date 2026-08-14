@@ -1,110 +1,212 @@
 import React from 'react';
-import { Routes, Route, Link } from 'react-router-dom';
+import { Routes, Route, Link, NavLink } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import LoginPage from './pages/LoginPage';
 import NotFoundPage from './pages/NotFoundPage';
+import CompanyListPage from './pages/companies/CompanyListPage';
+import CompanyFormPage from './pages/companies/CompanyFormPage';
+import CompanyProfilePage from './pages/companies/CompanyProfilePage';
+import DriveListPage from './pages/drives/DriveListPage';
+import DriveFormPage from './pages/drives/DriveFormPage';
+import DriveDetailPage from './pages/drives/DriveDetailPage';
 
-/**
- * Basic CSS styles for initial application scaffold setup.
- */
-const appStyles = {
-  container: {
-    fontFamily: "'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
+/** Global app styles */
+const styles = {
+  app: {
+    fontFamily: "'Inter', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
     minHeight: '100vh',
     display: 'flex',
     flexDirection: 'column',
-    backgroundColor: '#f8fafc',
-    color: '#0f172a',
+    backgroundColor: '#0f172a',
+    color: '#f1f5f9',
     margin: 0,
   },
   header: {
     backgroundColor: '#1e293b',
-    color: '#ffffff',
-    padding: '1rem 2rem',
+    borderBottom: '1px solid #334155',
+    padding: '0 2rem',
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
-    boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+    height: '64px',
+    position: 'sticky',
+    top: 0,
+    zIndex: 100,
+    backdropFilter: 'blur(8px)',
+    boxShadow: '0 2px 12px rgba(0,0,0,0.3)',
+  },
+  logo: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '0.6rem',
+    textDecoration: 'none',
+    color: '#f1f5f9',
+    fontWeight: 800,
+    fontSize: '1.1rem',
+    letterSpacing: '-0.01em',
   },
   nav: {
     display: 'flex',
-    gap: '1.5rem',
-  },
-  navLink: {
-    color: '#38bdf8',
-    textDecoration: 'none',
-    fontWeight: '500',
+    alignItems: 'center',
+    gap: '0.25rem',
   },
   main: {
     flex: 1,
-    padding: '2rem',
+    padding: '2.5rem 2rem',
     maxWidth: '1200px',
     margin: '0 auto',
     width: '100%',
+    boxSizing: 'border-box',
   },
   footer: {
-    backgroundColor: '#0f172a',
-    color: '#94a3b8',
+    backgroundColor: '#1e293b',
+    borderTop: '1px solid #334155',
+    color: '#475569',
     textAlign: 'center',
     padding: '1rem',
-    fontSize: '0.875rem',
+    fontSize: '0.8rem',
   },
-  badge: {
-    display: 'inline-block',
-    backgroundColor: '#3b82f6',
-    color: '#ffffff',
-    padding: '0.25rem 0.5rem',
-    borderRadius: '0.25rem',
-    fontSize: '0.75rem',
-    fontWeight: '600',
-    textTransform: 'uppercase',
-  }
 };
 
-function HomePlaceholder() {
+/** Active-aware nav link */
+function NavItem({ to, label, id }) {
   return (
-    <div style={{ backgroundColor: '#ffffff', padding: '2rem', borderRadius: '0.5rem', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem' }}>
-        <h2 style={{ margin: 0, color: '#1e293b' }}>Online Placement Management System</h2>
-        <span style={appStyles.badge}>System Scaffold Ready</span>
-      </div>
-      <p style={{ color: '#475569', lineHeight: 1.6 }}>
-        Base frontend application architecture established for team development.
-        Feature branches will build specific dashboards and modules.
-      </p>
-      <div style={{ marginTop: '1.5rem', padding: '1rem', backgroundColor: '#f1f5f9', borderRadius: '0.375rem', fontSize: '0.9rem' }}>
-        <strong>Team Note:</strong> Clone repository, create branch matching <code>feature/*</code> pattern, and contribute to your assigned module.
-      </div>
-    </div>
+    <NavLink
+      to={to}
+      id={id}
+      style={({ isActive }) => ({
+        color: isActive ? '#38bdf8' : '#94a3b8',
+        textDecoration: 'none',
+        fontWeight: 600,
+        fontSize: '0.88rem',
+        padding: '0.4rem 0.75rem',
+        borderRadius: '0.5rem',
+        backgroundColor: isActive ? 'rgba(56,189,248,0.08)' : 'transparent',
+        transition: 'all 0.15s',
+        whiteSpace: 'nowrap',
+      })}
+      onMouseEnter={(e) => { if (!e.currentTarget.classList.contains('active')) { e.currentTarget.style.backgroundColor = '#334155'; e.currentTarget.style.color = '#f1f5f9'; } }}
+      onMouseLeave={(e) => { if (!e.currentTarget.classList.contains('active')) { e.currentTarget.style.backgroundColor = 'transparent'; e.currentTarget.style.color = '#94a3b8'; } }}
+    >
+      {label}
+    </NavLink>
   );
 }
 
 export default function App() {
   return (
     <AuthProvider>
-      <div style={appStyles.container}>
-        <header style={appStyles.header}>
-          <h1 style={{ margin: 0, fontSize: '1.25rem', fontWeight: '600' }}>
-            Placement Management System
-          </h1>
-          <nav style={appStyles.nav}>
-            <Link to="/" style={appStyles.navLink}>Home</Link>
-            <Link to="/login" style={appStyles.navLink}>Login</Link>
+      <div style={styles.app}>
+        {/* ── Header ───────────────────────────────────────────────── */}
+        <header style={styles.header}>
+          <Link to="/" style={styles.logo}>
+            <span style={{ fontSize: '1.4rem' }}>🎓</span>
+            <span>PlaceOS</span>
+            <span style={{
+              fontSize: '0.65rem', fontWeight: 700, letterSpacing: '0.1em',
+              backgroundColor: '#3b82f6', color: '#fff',
+              padding: '0.15rem 0.4rem', borderRadius: '0.25rem', textTransform: 'uppercase',
+            }}>
+              Beta
+            </span>
+          </Link>
+
+          <nav style={styles.nav} aria-label="Main navigation">
+            <NavItem to="/"          label="Home"      id="nav-home" />
+            <NavItem to="/companies" label="🏢 Companies" id="nav-companies" />
+            <NavItem to="/drives"    label="📋 Drives"    id="nav-drives" />
+            <NavItem to="/login"     label="Login"     id="nav-login" />
           </nav>
         </header>
 
-        <main style={appStyles.main}>
+        {/* ── Main content ─────────────────────────────────────────── */}
+        <main style={styles.main}>
           <Routes>
-            <Route path="/" element={<HomePlaceholder />} />
+            {/* Home */}
+            <Route path="/" element={<HomePage />} />
+
+            {/* Auth */}
             <Route path="/login" element={<LoginPage />} />
+
+            {/* Company routes */}
+            <Route path="/companies"          element={<CompanyListPage />} />
+            <Route path="/companies/new"       element={<CompanyFormPage />} />
+            <Route path="/companies/:id"       element={<CompanyProfilePage />} />
+            <Route path="/companies/:id/edit"  element={<CompanyFormPage />} />
+
+            {/* Drive routes */}
+            <Route path="/drives"             element={<DriveListPage />} />
+            <Route path="/drives/new"          element={<DriveFormPage />} />
+            <Route path="/drives/:id"          element={<DriveDetailPage />} />
+            <Route path="/drives/:id/edit"     element={<DriveFormPage />} />
+
+            {/* 404 */}
             <Route path="*" element={<NotFoundPage />} />
           </Routes>
         </main>
 
-        <footer style={appStyles.footer}>
-          &copy; {new Date().getFullYear()} Online Placement Management System Team. All rights reserved.
+        {/* ── Footer ───────────────────────────────────────────────── */}
+        <footer style={styles.footer}>
+          © {new Date().getFullYear()} Online Placement Management System · feature/company-drive
         </footer>
       </div>
     </AuthProvider>
+  );
+}
+
+/** Landing page with quick navigation cards */
+function HomePage() {
+  const cards = [
+    { to: '/companies', emoji: '🏢', title: 'Companies', desc: 'Add, edit, and manage recruiting company profiles.' },
+    { to: '/drives',    emoji: '📋', title: 'Placement Drives', desc: 'Create and manage campus placement drives.' },
+    { to: '/drives/new', emoji: '✨', title: 'New Drive', desc: 'Post a new placement drive for a company.' },
+  ];
+
+  return (
+    <div>
+      {/* Hero */}
+      <div style={{ textAlign: 'center', padding: '3rem 0 3.5rem' }}>
+        <div style={{ fontSize: '3.5rem', marginBottom: '1rem' }}>🎓</div>
+        <h1 style={{ margin: '0 0 0.75rem', fontSize: '2.25rem', fontWeight: 900, color: '#f1f5f9', letterSpacing: '-0.02em' }}>
+          Online Placement Management
+        </h1>
+        <p style={{ margin: 0, color: '#64748b', fontSize: '1.05rem', maxWidth: '500px', marginInline: 'auto', lineHeight: 1.6 }}>
+          Streamline campus recruitment — manage companies, post drives, and track applications.
+        </p>
+      </div>
+
+      {/* Quick-access cards */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1.25rem', maxWidth: '860px', margin: '0 auto' }}>
+        {cards.map((card) => (
+          <Link
+            key={card.to}
+            to={card.to}
+            style={{
+              display: 'block',
+              backgroundColor: '#1e293b',
+              border: '1px solid #334155',
+              borderRadius: '0.875rem',
+              padding: '1.75rem',
+              textDecoration: 'none',
+              transition: 'transform 0.2s, box-shadow 0.2s, border-color 0.2s',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = 'translateY(-4px)';
+              e.currentTarget.style.boxShadow = '0 12px 32px rgba(0,0,0,0.4)';
+              e.currentTarget.style.borderColor = '#38bdf8';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = 'translateY(0)';
+              e.currentTarget.style.boxShadow = 'none';
+              e.currentTarget.style.borderColor = '#334155';
+            }}
+          >
+            <div style={{ fontSize: '2.25rem', marginBottom: '0.875rem' }}>{card.emoji}</div>
+            <h2 style={{ margin: '0 0 0.5rem', fontSize: '1.1rem', fontWeight: 700, color: '#f1f5f9' }}>{card.title}</h2>
+            <p style={{ margin: 0, color: '#64748b', fontSize: '0.88rem', lineHeight: 1.6 }}>{card.desc}</p>
+          </Link>
+        ))}
+      </div>
+    </div>
   );
 }
