@@ -24,10 +24,10 @@ public class JwtConfig {
     private String secret;
 
     /** Access-token TTL in milliseconds (default: 1 day). */
-    private long expirationMs;
+    private long expirationMs = 86400000L;
 
     /** Refresh-token TTL in milliseconds (default: 7 days). */
-    private long refreshExpirationMs;
+    private long refreshExpirationMs = 604800000L;
 
     // ── Getters & Setters ────────────────────────────────────────────
 
