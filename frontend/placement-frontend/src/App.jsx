@@ -1,11 +1,23 @@
 import React from 'react';
 import { Routes, Route, Link, NavLink } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
+
+// Public auth pages
 import LoginPage from './pages/LoginPage';
+import RegisterPage from './pages/RegisterPage';
+import ForgotPasswordPage from './pages/ForgotPasswordPage';
+import ResetPasswordPage from './pages/ResetPasswordPage';
+
+// Error pages
 import NotFoundPage from './pages/NotFoundPage';
+import UnauthorizedPage from './pages/UnauthorizedPage';
+
+// Company pages
 import CompanyListPage from './pages/companies/CompanyListPage';
 import CompanyFormPage from './pages/companies/CompanyFormPage';
 import CompanyProfilePage from './pages/companies/CompanyProfilePage';
+
+// Drive pages
 import DriveListPage from './pages/drives/DriveListPage';
 import DriveFormPage from './pages/drives/DriveFormPage';
 import DriveDetailPage from './pages/drives/DriveDetailPage';
@@ -85,8 +97,6 @@ function NavItem({ to, label, id }) {
         transition: 'all 0.15s',
         whiteSpace: 'nowrap',
       })}
-      onMouseEnter={(e) => { if (!e.currentTarget.classList.contains('active')) { e.currentTarget.style.backgroundColor = '#334155'; e.currentTarget.style.color = '#f1f5f9'; } }}
-      onMouseLeave={(e) => { if (!e.currentTarget.classList.contains('active')) { e.currentTarget.style.backgroundColor = 'transparent'; e.currentTarget.style.color = '#94a3b8'; } }}
     >
       {label}
     </NavLink>
@@ -97,7 +107,7 @@ export default function App() {
   return (
     <AuthProvider>
       <div style={styles.app}>
-        {/* ── Header ───────────────────────────────────────────────── */}
+        {/* Header */}
         <header style={styles.header}>
           <Link to="/" style={styles.logo}>
             <span style={{ fontSize: '1.4rem' }}>🎓</span>
@@ -107,47 +117,52 @@ export default function App() {
               backgroundColor: '#3b82f6', color: '#fff',
               padding: '0.15rem 0.4rem', borderRadius: '0.25rem', textTransform: 'uppercase',
             }}>
-              Beta
+              Portal
             </span>
           </Link>
 
           <nav style={styles.nav} aria-label="Main navigation">
-            <NavItem to="/"          label="Home"      id="nav-home" />
+            <NavItem to="/"          label="Home"         id="nav-home" />
             <NavItem to="/companies" label="🏢 Companies" id="nav-companies" />
             <NavItem to="/drives"    label="📋 Drives"    id="nav-drives" />
-            <NavItem to="/login"     label="Login"     id="nav-login" />
+            <NavItem to="/login"     label="Login"        id="nav-login" />
+            <NavItem to="/register"  label="Register"     id="nav-register" />
           </nav>
         </header>
 
-        {/* ── Main content ─────────────────────────────────────────── */}
+        {/* Main Content */}
         <main style={styles.main}>
           <Routes>
-            {/* Home */}
+            {/* Landing */}
             <Route path="/" element={<HomePage />} />
 
-            {/* Auth */}
-            <Route path="/login" element={<LoginPage />} />
+            {/* Public Authentication */}
+            <Route path="/login"           element={<LoginPage />} />
+            <Route path="/register"        element={<RegisterPage />} />
+            <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+            <Route path="/reset-password"  element={<ResetPasswordPage />} />
 
-            {/* Company routes */}
-            <Route path="/companies"          element={<CompanyListPage />} />
-            <Route path="/companies/new"       element={<CompanyFormPage />} />
-            <Route path="/companies/:id"       element={<CompanyProfilePage />} />
-            <Route path="/companies/:id/edit"  element={<CompanyFormPage />} />
+            {/* Company Management */}
+            <Route path="/companies"         element={<CompanyListPage />} />
+            <Route path="/companies/new"      element={<CompanyFormPage />} />
+            <Route path="/companies/:id"      element={<CompanyProfilePage />} />
+            <Route path="/companies/:id/edit" element={<CompanyFormPage />} />
 
-            {/* Drive routes */}
-            <Route path="/drives"             element={<DriveListPage />} />
-            <Route path="/drives/new"          element={<DriveFormPage />} />
-            <Route path="/drives/:id"          element={<DriveDetailPage />} />
-            <Route path="/drives/:id/edit"     element={<DriveFormPage />} />
+            {/* Placement Drive Management */}
+            <Route path="/drives"            element={<DriveListPage />} />
+            <Route path="/drives/new"         element={<DriveFormPage />} />
+            <Route path="/drives/:id"         element={<DriveDetailPage />} />
+            <Route path="/drives/:id/edit"    element={<DriveFormPage />} />
 
-            {/* 404 */}
-            <Route path="*" element={<NotFoundPage />} />
+            {/* Errors */}
+            <Route path="/unauthorized" element={<UnauthorizedPage />} />
+            <Route path="*"             element={<NotFoundPage />} />
           </Routes>
         </main>
 
-        {/* ── Footer ───────────────────────────────────────────────── */}
+        {/* Footer */}
         <footer style={styles.footer}>
-          © {new Date().getFullYear()} Online Placement Management System · feature/company-drive
+          © {new Date().getFullYear()} Online Placement Management System · Synced Auth + Company & Placement Drive Module
         </footer>
       </div>
     </AuthProvider>
@@ -159,7 +174,7 @@ function HomePage() {
   const cards = [
     { to: '/companies', emoji: '🏢', title: 'Companies', desc: 'Add, edit, and manage recruiting company profiles.' },
     { to: '/drives',    emoji: '📋', title: 'Placement Drives', desc: 'Create and manage campus placement drives.' },
-    { to: '/drives/new', emoji: '✨', title: 'New Drive', desc: 'Post a new placement drive for a company.' },
+    { to: '/login',     emoji: '🔑', title: 'Portal Login', desc: 'Sign in to access your dashboard.' },
   ];
 
   return (
@@ -168,10 +183,10 @@ function HomePage() {
       <div style={{ textAlign: 'center', padding: '3rem 0 3.5rem' }}>
         <div style={{ fontSize: '3.5rem', marginBottom: '1rem' }}>🎓</div>
         <h1 style={{ margin: '0 0 0.75rem', fontSize: '2.25rem', fontWeight: 900, color: '#f1f5f9', letterSpacing: '-0.02em' }}>
-          Online Placement Management
+          Online Placement Management System
         </h1>
         <p style={{ margin: 0, color: '#64748b', fontSize: '1.05rem', maxWidth: '500px', marginInline: 'auto', lineHeight: 1.6 }}>
-          Streamline campus recruitment — manage companies, post drives, and track applications.
+          Streamline campus recruitment — manage authentication, recruiting companies, drives, and student applications.
         </p>
       </div>
 
@@ -189,16 +204,6 @@ function HomePage() {
               padding: '1.75rem',
               textDecoration: 'none',
               transition: 'transform 0.2s, box-shadow 0.2s, border-color 0.2s',
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.transform = 'translateY(-4px)';
-              e.currentTarget.style.boxShadow = '0 12px 32px rgba(0,0,0,0.4)';
-              e.currentTarget.style.borderColor = '#38bdf8';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.transform = 'translateY(0)';
-              e.currentTarget.style.boxShadow = 'none';
-              e.currentTarget.style.borderColor = '#334155';
             }}
           >
             <div style={{ fontSize: '2.25rem', marginBottom: '0.875rem' }}>{card.emoji}</div>
