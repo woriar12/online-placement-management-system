@@ -36,7 +36,6 @@ public class AuthServiceImpl implements AuthService {
 
     private static final Logger log = LoggerFactory.getLogger(AuthServiceImpl.class);
 
-    /** Password-reset token validity window (24 hours). */
     private static final long RESET_TOKEN_VALIDITY_HOURS = 24;
 
     private final UserRepository userRepository;
@@ -66,11 +65,6 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public AuthResponse register(RegisterRequest request) {
-    // ── Register ─────────────────────────────────────────────────────
-
-    @Override
-    public AuthResponse register(RegisterRequest request) {
-        // Prevent self-registration as ADMIN
         if (Role.ADMIN.equals(request.getRole())) {
             throw new IllegalArgumentException(
                     "ADMIN accounts cannot be self-registered. Contact your system administrator.");
@@ -97,12 +91,6 @@ public class AuthServiceImpl implements AuthService {
     @Override
     @Transactional(readOnly = true)
     public AuthResponse login(LoginRequest request) {
-    // ── Login ────────────────────────────────────────────────────────
-
-    @Override
-    @Transactional(readOnly = true)
-    public AuthResponse login(LoginRequest request) {
-        // AuthenticationManager validates credentials — throws BadCredentialsException on failure
         authManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.getEmail().toLowerCase().trim(),
@@ -118,8 +106,6 @@ public class AuthServiceImpl implements AuthService {
         return buildAuthResponse(user);
     }
 
-    // ── Refresh Token ────────────────────────────────────────────────
-
     @Override
     @Transactional(readOnly = true)
     public AuthResponse refreshToken(RefreshTokenRequest request) {
@@ -134,8 +120,6 @@ public class AuthServiceImpl implements AuthService {
         return buildAuthResponse(user);
     }
 
-    // ── Forgot Password ──────────────────────────────────────────────
-
     @Override
     public void forgotPassword(ForgotPasswordRequest request) {
         String email = request.getEmail().toLowerCase().trim();
@@ -143,12 +127,6 @@ public class AuthServiceImpl implements AuthService {
         userRepository.findByEmail(email).ifPresent(user -> {
             tokenRepository.deleteByUser(user);
 
-        // Always return success to prevent email enumeration attacks
-        userRepository.findByEmail(email).ifPresent(user -> {
-            // Delete any existing tokens for this user
-            tokenRepository.deleteByUser(user);
-
-            // Create new token
             PasswordResetToken resetToken = new PasswordResetToken();
             resetToken.setToken(UUID.randomUUID().toString());
             resetToken.setUser(user);
@@ -164,14 +142,6 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public void resetPassword(ResetPasswordRequest request) {
-    // ── Reset Password ───────────────────────────────────────────────
-
-    @Override
-    public void resetPassword(ResetPasswordRequest request) {
-        if (!request.getNewPassword().equals(request.getConfirmPassword())) {
-            throw new IllegalArgumentException("Passwords do not match.");
-        }
-
         PasswordResetToken resetToken = tokenRepository.findByToken(request.getToken())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid or expired reset token."));
 
@@ -195,14 +165,6 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public void changePassword(String email, ChangePasswordRequest request) {
-    // ── Change Password ──────────────────────────────────────────────
-
-    @Override
-    public void changePassword(String email, ChangePasswordRequest request) {
-        if (!request.getNewPassword().equals(request.getConfirmPassword())) {
-            throw new IllegalArgumentException("New passwords do not match.");
-        }
-
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found: " + email));
 
@@ -220,17 +182,6 @@ public class AuthServiceImpl implements AuthService {
         log.info("User logout — token invalidation delegated to client.");
     }
 
-    // ── Logout ───────────────────────────────────────────────────────
-
-    @Override
-    public void logout(String token) {
-        // Stateless JWT logout: the client discards the token.
-        // Extend this with a token deny-list (Redis/DB) for server-side revocation.
-        log.info("User logout — token invalidation delegated to client.");
-    }
-
-    // ── Private Helpers ──────────────────────────────────────────────
-
     private AuthResponse buildAuthResponse(User user) {
         Map<String, Object> extraClaims = new HashMap<>();
         extraClaims.put("role", user.getRole().name());
@@ -243,8 +194,5 @@ public class AuthServiceImpl implements AuthService {
                 user.getId(), user.getName(), user.getEmail(), user.getRole());
 
         return new AuthResponse(accessToken, refreshToken, "Bearer", userInfo);
-        // jwtConfig not directly accessible here; expiresIn comes from the property binding
-        // Using a sensible default (24h = 86400s) — token carries its own expiry claim anyway.
-        return new AuthResponse(accessToken, refreshToken, 86400L, userInfo);
     }
 }

@@ -6,25 +6,17 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-public class ForgotPasswordRequest {
-    @NotBlank(message = "Email is required")
-    @Email(message = "Invalid email format")
-    private String email;
-
 /**
- * Request payload for initiating the forgot-password flow.
+ * Request payload to initiate a password reset.
  *
  * @author feature/auth
  */
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class ForgotPasswordRequest {
 
     @NotBlank(message = "Email is required")
     @Email(message = "Email must be a valid address")
     private String email;
-
-    public String getEmail() { return email; }
-    public void setEmail(String email) { this.email = email; }
 }

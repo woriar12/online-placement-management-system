@@ -1,7 +1,5 @@
 import React from 'react';
-import { Routes, Route, Link, NavLink } from 'react-router-dom';
-import { AuthProvider } from './context/AuthContext';
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route, Link, NavLink, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 
@@ -24,6 +22,13 @@ import CompanyProfilePage from './pages/companies/CompanyProfilePage';
 import DriveListPage from './pages/drives/DriveListPage';
 import DriveFormPage from './pages/drives/DriveFormPage';
 import DriveDetailPage from './pages/drives/DriveDetailPage';
+
+// Student pages
+import StudentDashboardPage from './pages/StudentDashboardPage';
+import StudentProfilePage from './pages/StudentProfilePage';
+import StudentDashboard from './pages/dashboards/StudentDashboard';
+import AdminDashboard from './pages/dashboards/AdminDashboard';
+import PlacementOfficerDashboard from './pages/dashboards/PlacementOfficerDashboard';
 
 /** Global app styles */
 const styles = {
@@ -125,11 +130,12 @@ export default function App() {
           </Link>
 
           <nav style={styles.nav} aria-label="Main navigation">
-            <NavItem to="/"          label="Home"         id="nav-home" />
-            <NavItem to="/companies" label="🏢 Companies" id="nav-companies" />
-            <NavItem to="/drives"    label="📋 Drives"    id="nav-drives" />
-            <NavItem to="/login"     label="Login"        id="nav-login" />
-            <NavItem to="/register"  label="Register"     id="nav-register" />
+            <NavItem to="/"                  label="Home"              id="nav-home" />
+            <NavItem to="/companies"         label="🏢 Companies"      id="nav-companies" />
+            <NavItem to="/drives"            label="📋 Drives"         id="nav-drives" />
+            <NavItem to="/student/dashboard" label="🎓 Student Portal" id="nav-student" />
+            <NavItem to="/login"             label="Login"             id="nav-login" />
+            <NavItem to="/register"          label="Register"          id="nav-register" />
           </nav>
         </header>
 
@@ -157,6 +163,36 @@ export default function App() {
             <Route path="/drives/:id"         element={<DriveDetailPage />} />
             <Route path="/drives/:id/edit"    element={<DriveFormPage />} />
 
+            {/* Student Module Routes */}
+            <Route path="/student/dashboard" element={<StudentDashboardPage />} />
+            <Route path="/student/profile"   element={<StudentProfilePage />} />
+
+            {/* Protected Role Dashboards */}
+            <Route
+              path="/dashboard/student"
+              element={
+                <ProtectedRoute allowedRoles={['STUDENT']}>
+                  <StudentDashboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/dashboard/admin"
+              element={
+                <ProtectedRoute allowedRoles={['ADMIN']}>
+                  <AdminDashboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/dashboard/placement-officer"
+              element={
+                <ProtectedRoute allowedRoles={['PLACEMENT_OFFICER']}>
+                  <PlacementOfficerDashboard />
+                </ProtectedRoute>
+              }
+            />
+
             {/* Errors */}
             <Route path="/unauthorized" element={<UnauthorizedPage />} />
             <Route path="*"             element={<NotFoundPage />} />
@@ -165,76 +201,9 @@ export default function App() {
 
         {/* Footer */}
         <footer style={styles.footer}>
-          © {new Date().getFullYear()} Online Placement Management System · Synced Auth + Company & Placement Drive Module
+          © {new Date().getFullYear()} Online Placement Management System · Student Module
         </footer>
       </div>
-// Protected dashboards
-import StudentDashboard from './pages/dashboards/StudentDashboard';
-import AdminDashboard from './pages/dashboards/AdminDashboard';
-import PlacementOfficerDashboard from './pages/dashboards/PlacementOfficerDashboard';
-
-/**
- * Root application component.
- *
- * Route summary:
- *  /                            → redirect to /login
- *  /login                       → LoginPage (public)
- *  /register                    → RegisterPage (public)
- *  /forgot-password             → ForgotPasswordPage (public)
- *  /reset-password?token=...    → ResetPasswordPage (public)
- *  /dashboard/student           → StudentDashboard (STUDENT only)
- *  /dashboard/admin             → AdminDashboard (ADMIN only)
- *  /dashboard/placement-officer → PlacementOfficerDashboard (PLACEMENT_OFFICER only)
- *  /unauthorized                → UnauthorizedPage
- *  *                            → NotFoundPage
- */
-export default function App() {
-  return (
-    <AuthProvider>
-      <Routes>
-        {/* Root redirect */}
-        <Route path="/" element={<Navigate to="/login" replace />} />
-
-        {/* ── Public ─────────────────────────────────────────── */}
-        <Route path="/login"            element={<LoginPage />} />
-        <Route path="/register"         element={<RegisterPage />} />
-        <Route path="/forgot-password"  element={<ForgotPasswordPage />} />
-        <Route path="/reset-password"   element={<ResetPasswordPage />} />
-
-        {/* ── Protected — Student ────────────────────────────── */}
-        <Route
-          path="/dashboard/student"
-          element={
-            <ProtectedRoute allowedRoles={['STUDENT']}>
-              <StudentDashboard />
-            </ProtectedRoute>
-          }
-        />
-
-        {/* ── Protected — Admin ─────────────────────────────── */}
-        <Route
-          path="/dashboard/admin"
-          element={
-            <ProtectedRoute allowedRoles={['ADMIN']}>
-              <AdminDashboard />
-            </ProtectedRoute>
-          }
-        />
-
-        {/* ── Protected — Placement Officer ──────────────────── */}
-        <Route
-          path="/dashboard/placement-officer"
-          element={
-            <ProtectedRoute allowedRoles={['PLACEMENT_OFFICER']}>
-              <PlacementOfficerDashboard />
-            </ProtectedRoute>
-          }
-        />
-
-        {/* ── Error Pages ────────────────────────────────────── */}
-        <Route path="/unauthorized" element={<UnauthorizedPage />} />
-        <Route path="*"             element={<NotFoundPage />} />
-      </Routes>
     </AuthProvider>
   );
 }
@@ -242,9 +211,10 @@ export default function App() {
 /** Landing page with quick navigation cards */
 function HomePage() {
   const cards = [
-    { to: '/companies', emoji: '🏢', title: 'Companies', desc: 'Add, edit, and manage recruiting company profiles.' },
-    { to: '/drives',    emoji: '📋', title: 'Placement Drives', desc: 'Create and manage campus placement drives.' },
-    { to: '/login',     emoji: '🔑', title: 'Portal Login', desc: 'Sign in to access your dashboard.' },
+    { to: '/companies',         emoji: '🏢', title: 'Companies',         desc: 'Add, edit, and manage recruiting company profiles.' },
+    { to: '/drives',            emoji: '📋', title: 'Placement Drives',  desc: 'Create and manage campus placement drives.' },
+    { to: '/student/dashboard', emoji: '🎓', title: 'Student Portal',   desc: 'Access your student dashboard and applications.' },
+    { to: '/login',             emoji: '🔑', title: 'Portal Login',      desc: 'Sign in to access your account.' },
   ];
 
   return (
@@ -256,12 +226,12 @@ function HomePage() {
           Online Placement Management System
         </h1>
         <p style={{ margin: 0, color: '#64748b', fontSize: '1.05rem', maxWidth: '500px', marginInline: 'auto', lineHeight: 1.6 }}>
-          Streamline campus recruitment — manage authentication, recruiting companies, drives, and student applications.
+          Streamline campus recruitment — student profiles, drive registrations, and application tracking.
         </p>
       </div>
 
       {/* Quick-access cards */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1.25rem', maxWidth: '860px', margin: '0 auto' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(230px, 1fr))', gap: '1.25rem', maxWidth: '960px', margin: '0 auto' }}>
         {cards.map((card) => (
           <Link
             key={card.to}

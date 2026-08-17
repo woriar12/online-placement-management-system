@@ -7,46 +7,19 @@ import { useAuth } from '../context/AuthContext';
  *
  * @param {Object} props
  * @param {React.ReactNode} props.children
- * @param {string[]} [props.roles] Optional array of allowed roles (e.g. ['ADMIN', 'PLACEMENT_OFFICER'])
+ * @param {string[]} [props.allowedRoles] Optional array of allowed roles (e.g. ['ADMIN', 'PLACEMENT_OFFICER'])
+ * @param {string[]} [props.roles] Optional fallback array of allowed roles
  */
-export default function ProtectedRoute({ children, roles }) {
- * Wraps routes that require authentication.
- *
- * - If loading (restoring session from localStorage) — shows a spinner
- * - If unauthenticated — redirects to /login, preserving the attempted URL
- * - If allowedRoles is provided — checks the user's role; redirects to /unauthorized on failure
- *
- * @param {React.ReactNode} children    — the protected component
- * @param {string[]}        allowedRoles — optional array of Role enum strings
- */
-export default function ProtectedRoute({ children, allowedRoles }) {
+export default function ProtectedRoute({ children, allowedRoles, roles }) {
   const { isAuthenticated, user, loading } = useAuth();
   const location = useLocation();
+
+  const activeRoles = allowedRoles || roles;
 
   if (loading) {
     return (
       <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '50vh' }}>
         <div style={{ color: '#94a3b8', fontSize: '1rem' }}>Loading session…</div>
-      <div style={{
-        minHeight: '100vh',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        background: 'var(--color-bg)',
-        flexDirection: 'column',
-        gap: '1rem',
-      }}>
-        <div style={{
-          width: 48, height: 48,
-          border: '3px solid rgba(99,102,241,0.2)',
-          borderTopColor: 'var(--color-primary)',
-          borderRadius: '50%',
-          animation: 'spin 0.8s linear infinite',
-        }} />
-        <p style={{ color: 'var(--color-text-secondary)', fontSize: 'var(--text-sm)' }}>
-          Loading…
-        </p>
-        <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
       </div>
     );
   }
@@ -55,8 +28,7 @@ export default function ProtectedRoute({ children, allowedRoles }) {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
-  if (roles && roles.length > 0 && user && !roles.includes(user.role)) {
-  if (allowedRoles && allowedRoles.length > 0 && !allowedRoles.includes(user?.role)) {
+  if (activeRoles && activeRoles.length > 0 && user && !activeRoles.includes(user.role)) {
     return <Navigate to="/unauthorized" replace />;
   }
 

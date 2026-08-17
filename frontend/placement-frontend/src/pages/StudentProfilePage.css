@@ -1,0 +1,178 @@
+/* Student Profile Page */
+.spp {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 32px 24px;
+  font-family: 'Inter', sans-serif;
+}
+
+.spp-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  color: #64748b;
+  gap: 14px;
+}
+
+.spp-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(99,102,241,0.2);
+  border-top-color: #6366f1;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Header */
+.spp__header {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  background: linear-gradient(135deg, #1e1e2e, #16213e);
+  border: 1px solid rgba(99,102,241,0.2);
+  border-radius: 16px;
+  padding: 24px 28px;
+  margin-bottom: 28px;
+  flex-wrap: wrap;
+}
+
+.spp__avatar {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: #fff;
+  flex-shrink: 0;
+}
+
+.spp__name {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #f1f5f9;
+  margin: 0;
+}
+
+.spp__email {
+  font-size: 0.88rem;
+  color: #64748b;
+  margin: 3px 0 0;
+}
+
+.spp__save-btn {
+  margin-left: auto;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 11px 28px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.2s ease, transform 0.15s ease;
+}
+
+.spp__save-btn:hover:not(:disabled) {
+  opacity: 0.85;
+  transform: scale(1.03);
+}
+
+.spp__save-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.spp__save-btn--saved {
+  background: linear-gradient(135deg, #22c55e, #16a34a) !important;
+}
+
+/* Tabs */
+.spp__tabs {
+  display: flex;
+  gap: 4px;
+  background: rgba(15,15,30,0.5);
+  border-radius: 12px;
+  padding: 6px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.spp__tab {
+  flex: 1;
+  min-width: 90px;
+  background: none;
+  border: none;
+  color: #64748b;
+  border-radius: 8px;
+  padding: 9px 14px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+  white-space: nowrap;
+}
+
+.spp__tab:hover {
+  background: rgba(99,102,241,0.1);
+  color: #a5b4fc;
+}
+
+.spp__tab--active {
+  background: rgba(99,102,241,0.18);
+  color: #818cf8;
+}
+
+/* Content card */
+.spp__content {
+  background: linear-gradient(135deg, #1e1e2e 0%, #1a1a2e 100%);
+  border: 1px solid rgba(99,102,241,0.2);
+  border-radius: 14px;
+  padding: 28px;
+}
+
+/* Profile grid */
+.spp__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+.spp__field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.spp__label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.spp__input {
+  background: rgba(15,15,30,0.6);
+  border: 1px solid rgba(99,102,241,0.25);
+  border-radius: 8px;
+  padding: 10px 14px;
+  color: #e2e8f0;
+  font-size: 0.9rem;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.spp__input:focus {
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99,102,241,0.12);
+}
+
+.spp__input::placeholder { color: #334155; }
