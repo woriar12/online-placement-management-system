@@ -38,6 +38,7 @@ public interface AuthService {
     /**
      * Initiates the forgot-password flow: generates a reset token, stores it, and logs
      * the reset URL.
+     * the reset URL (email delivery is handled by {@link EmailService}).
      *
      * @param request contains the user's email
      */
@@ -47,6 +48,7 @@ public interface AuthService {
      * Validates the password-reset token and updates the user's password.
      *
      * @param request contains the token and new password
+     * @param request contains the token, new password, and confirmation
      */
     void resetPassword(ResetPasswordRequest request);
 
@@ -55,11 +57,14 @@ public interface AuthService {
      *
      * @param email   the authenticated user's email
      * @param request contains current password and new password
+     * @param email             the authenticated user's email
+     * @param request           contains current password, new password, and confirmation
      */
     void changePassword(String email, ChangePasswordRequest request);
 
     /**
      * Logs out the user.
+     * Logs out the user (client-side token invalidation; extend to a deny-list if needed).
      *
      * @param token the JWT access token to invalidate
      */

@@ -24,6 +24,7 @@
     <!-- ── Properties ────────────────────────────────────── -->
     <properties>
         <java.version>25</java.version>
+        <java.version>17</java.version>
         <lombok.version>1.18.36</lombok.version>
         <jjwt.version>0.12.6</jjwt.version>
         <mapstruct.version>1.6.3</mapstruct.version>
@@ -139,6 +140,7 @@
             </plugin>
 
             <!-- Maven Compiler — MapStruct annotation processor -->
+            <!-- Maven Compiler Plugin -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -153,6 +155,7 @@
                             <version>${mapstruct.version}</version>
                         </path>
                     </annotationProcessorPaths>
+                    <release>${java.version}</release>
                 </configuration>
             </plugin>
 

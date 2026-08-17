@@ -1,9 +1,14 @@
 package com.placement.management.exception;
 
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -15,7 +20,7 @@ import java.util.Map;
 /**
  * Global exception handler providing centralized error handling across all controllers.
  *
- * @author Team Leader
+ * @author Team Leader / feature/auth
  */
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -47,6 +52,59 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<Void>> handleIllegalArgumentException(IllegalArgumentException ex) {
         log.warn("Illegal argument: {}", ex.getMessage());
         return new ResponseEntity<>(ApiResponse.error(ex.getMessage()), HttpStatus.BAD_REQUEST);
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<ApiResponse<Void>> handleBadCredentials(BadCredentialsException ex) {
+        log.warn("Bad credentials attempt: {}", ex.getMessage());
+        return new ResponseEntity<>(
+                ApiResponse.error("Invalid email or password"),
+                HttpStatus.UNAUTHORIZED
+        );
+    }
+
+    @ExceptionHandler(UsernameNotFoundException.class)
+    public ResponseEntity<ApiResponse<Void>> handleUsernameNotFound(UsernameNotFoundException ex) {
+        log.warn("User not found: {}", ex.getMessage());
+        // Return generic message to prevent user enumeration
+        return new ResponseEntity<>(
+                ApiResponse.error("Invalid email or password"),
+                HttpStatus.UNAUTHORIZED
+        );
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ApiResponse<Void>> handleAccessDenied(AccessDeniedException ex) {
+        log.warn("Access denied: {}", ex.getMessage());
+        return new ResponseEntity<>(
+                ApiResponse.error("You do not have permission to access this resource"),
+                HttpStatus.FORBIDDEN
+        );
+    }
+
+    @ExceptionHandler(ExpiredJwtException.class)
+    public ResponseEntity<ApiResponse<Void>> handleExpiredJwt(ExpiredJwtException ex) {
+        log.warn("JWT token expired: {}", ex.getMessage());
+        return new ResponseEntity<>(
+                ApiResponse.error("Session expired. Please log in again."),
+                HttpStatus.UNAUTHORIZED
+        );
+    }
+
+    @ExceptionHandler(JwtException.class)
+    public ResponseEntity<ApiResponse<Void>> handleJwtException(JwtException ex) {
+        log.warn("JWT error: {}", ex.getMessage());
+        return new ResponseEntity<>(
+                ApiResponse.error("Invalid authentication token."),
+                HttpStatus.UNAUTHORIZED
+        );
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ApiResponse<Void>> handleIllegalArgument(IllegalArgumentException ex) {
+        log.warn("Illegal argument: {}", ex.getMessage());
+        return new ResponseEntity<>(
+                ApiResponse.error(ex.getMessage()),
+                HttpStatus.BAD_REQUEST
+        );
     }
 
     @ExceptionHandler(Exception.class)
