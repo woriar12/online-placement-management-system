@@ -1,75 +1,90 @@
 package com.placement.management.controller;
 
+import com.placement.management.dto.*;
 import com.placement.management.entity.User;
 import com.placement.management.exception.ApiResponse;
-import com.placement.management.repository.UserRepository;
-import com.placement.management.security.JwtUtil;
+import com.placement.management.service.AuthService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
-import java.util.Map;
-
+/**
+ * REST controller that exposes all authentication-related endpoints.
+ *
+ * @author feature/auth
+ */
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
 
-    private final UserRepository userRepository;
-    private final UserDetailsService userDetailsService;
-    private final JwtUtil jwtUtil;
-    private final PasswordEncoder passwordEncoder;
+    private final AuthService authService;
 
-    public AuthController(
-            UserRepository userRepository,
-            UserDetailsService userDetailsService,
-            JwtUtil jwtUtil,
-            PasswordEncoder passwordEncoder) {
-        this.userRepository = userRepository;
-        this.userDetailsService = userDetailsService;
-        this.jwtUtil = jwtUtil;
-        this.passwordEncoder = passwordEncoder;
+    public AuthController(AuthService authService) {
+        this.authService = authService;
     }
 
-    public static class LoginRequest {
-        private String email;
-        private String password;
-
-        public String getEmail() { return email; }
-        public void setEmail(String email) { this.email = email; }
-        public String getPassword() { return password; }
-        public void setPassword(String password) { this.password = password; }
+    @PostMapping("/register")
+    public ResponseEntity<ApiResponse<AuthResponse>> register(
+            @Valid @RequestBody RegisterRequest request) {
+        AuthResponse response = authService.register(request);
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(ApiResponse.success(response, "Registration successful"));
     }
 
     @PostMapping("/login")
-    public ResponseEntity<ApiResponse<Map<String, Object>>> login(@RequestBody LoginRequest request) {
-        if (request.getEmail() == null || request.getPassword() == null) {
-            return ResponseEntity.badRequest().body(ApiResponse.error("Email and password are required"));
-        }
+    public ResponseEntity<ApiResponse<AuthResponse>> login(
+            @Valid @RequestBody LoginRequest request) {
+        AuthResponse response = authService.login(request);
+        return ResponseEntity.ok(ApiResponse.success(response, "Login successful"));
+    }
 
-        User user = userRepository.findByEmail(request.getEmail().trim())
-                .orElse(null);
+    @PostMapping("/refresh")
+    public ResponseEntity<ApiResponse<AuthResponse>> refresh(
+            @Valid @RequestBody RefreshTokenRequest request) {
+        AuthResponse response = authService.refreshToken(request);
+        return ResponseEntity.ok(ApiResponse.success(response, "Token refreshed"));
+    }
 
-        if (user == null || !passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(ApiResponse.error("Invalid email or password credentials"));
-        }
+    @PostMapping("/forgot-password")
+    public ResponseEntity<ApiResponse<Void>> forgotPassword(
+            @Valid @RequestBody ForgotPasswordRequest request) {
+        authService.forgotPassword(request);
+        return ResponseEntity.ok(ApiResponse.success(null,
+                "If an account with that email exists, a reset link has been sent."));
+    }
 
-        UserDetails userDetails = userDetailsService.loadUserByUsername(user.getEmail());
-        String token = jwtUtil.generateToken(userDetails);
+    @PostMapping("/reset-password")
+    public ResponseEntity<ApiResponse<Void>> resetPassword(
+            @Valid @RequestBody ResetPasswordRequest request) {
+        authService.resetPassword(request);
+        return ResponseEntity.ok(ApiResponse.success(null, "Password reset successfully"));
+    }
 
-        Map<String, Object> responseData = new HashMap<>();
-        responseData.put("token", token);
-        responseData.put("user", Map.of(
-                "id", user.getId(),
-                "email", user.getEmail(),
-                "role", user.getRole().name(),
-                "status", user.getStatus().name()
-        ));
+    @GetMapping("/me")
+    public ResponseEntity<ApiResponse<UserInfoDto>> getCurrentUser(
+            @AuthenticationPrincipal User user) {
+        UserInfoDto dto = new UserInfoDto(
+                user.getId(), user.getName(), user.getEmail(), user.getRole());
+        return ResponseEntity.ok(ApiResponse.success(dto));
+    }
 
-        return ResponseEntity.ok(ApiResponse.success(responseData, "Login successful"));
+    @PostMapping("/logout")
+    public ResponseEntity<ApiResponse<Void>> logout(
+            @RequestHeader(value = "Authorization", required = false) String authHeader) {
+        String token = (authHeader != null && authHeader.startsWith("Bearer "))
+                ? authHeader.substring(7) : null;
+        authService.logout(token);
+        return ResponseEntity.ok(ApiResponse.success(null, "Logged out successfully"));
+    }
+
+    @PostMapping("/change-password")
+    public ResponseEntity<ApiResponse<Void>> changePassword(
+            @AuthenticationPrincipal User user,
+            @Valid @RequestBody ChangePasswordRequest request) {
+        authService.changePassword(user.getEmail(), request);
+        return ResponseEntity.ok(ApiResponse.success(null, "Password changed successfully"));
     }
 }

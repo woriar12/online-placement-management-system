@@ -1,6 +1,6 @@
 package com.placement.management.dto.admin;
 
-import com.placement.management.entity.enums.DriveStatus;
+import com.placement.management.entity.DriveStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

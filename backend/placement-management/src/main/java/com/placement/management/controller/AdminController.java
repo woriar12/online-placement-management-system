@@ -1,9 +1,8 @@
 package com.placement.management.controller;
 
 import com.placement.management.dto.admin.*;
-import com.placement.management.entity.enums.ApplicationStatus;
-import com.placement.management.entity.enums.CompanyStatus;
-import com.placement.management.entity.enums.DriveStatus;
+import com.placement.management.entity.ApplicationStatus;
+import com.placement.management.entity.DriveStatus;
 import com.placement.management.exception.ApiResponse;
 import com.placement.management.service.AdminService;
 import org.springframework.data.domain.Page;
@@ -80,14 +79,13 @@ public class AdminController {
     @GetMapping("/companies")
     public ResponseEntity<ApiResponse<Page<CompanyAdminDTO>>> getCompanies(
             @RequestParam(required = false) String query,
-            @RequestParam(required = false) CompanyStatus status,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "id") String sortBy,
             @RequestParam(defaultValue = "asc") String sortDir) {
 
         Sort sort = sortDir.equalsIgnoreCase("desc") ? Sort.by(sortBy).descending() : Sort.by(sortBy).ascending();
-        Page<CompanyAdminDTO> companies = adminService.getAllCompanies(query, status, PageRequest.of(page, size, sort));
+        Page<CompanyAdminDTO> companies = adminService.getAllCompanies(query, PageRequest.of(page, size, sort));
         return ResponseEntity.ok(ApiResponse.success(companies, "Companies retrieved successfully"));
     }
 
@@ -95,14 +93,6 @@ public class AdminController {
     public ResponseEntity<ApiResponse<CompanyAdminDTO>> getCompanyById(@PathVariable Long id) {
         CompanyAdminDTO company = adminService.getCompanyById(id);
         return ResponseEntity.ok(ApiResponse.success(company, "Company details retrieved successfully"));
-    }
-
-    @PutMapping("/companies/{id}/approval")
-    public ResponseEntity<ApiResponse<CompanyAdminDTO>> updateCompanyApprovalStatus(
-            @PathVariable Long id,
-            @RequestBody StatusUpdateDTO statusUpdate) {
-        CompanyAdminDTO updated = adminService.updateCompanyApprovalStatus(id, statusUpdate);
-        return ResponseEntity.ok(ApiResponse.success(updated, "Company approval status updated successfully"));
     }
 
     @PutMapping("/companies/{id}/status")

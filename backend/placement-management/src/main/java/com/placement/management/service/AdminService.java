@@ -1,9 +1,8 @@
 package com.placement.management.service;
 
 import com.placement.management.dto.admin.*;
-import com.placement.management.entity.enums.ApplicationStatus;
-import com.placement.management.entity.enums.CompanyStatus;
-import com.placement.management.entity.enums.DriveStatus;
+import com.placement.management.entity.ApplicationStatus;
+import com.placement.management.entity.DriveStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -16,9 +15,8 @@ public interface AdminService {
     StudentAdminDTO updateStudent(Long studentId, CreateStudentDTO dto);
     StudentAdminDTO updateStudentStatus(Long studentId, StatusUpdateDTO statusUpdate);
 
-    Page<CompanyAdminDTO> getAllCompanies(String query, CompanyStatus status, Pageable pageable);
+    Page<CompanyAdminDTO> getAllCompanies(String query, Pageable pageable);
     CompanyAdminDTO getCompanyById(Long companyId);
-    CompanyAdminDTO updateCompanyApprovalStatus(Long companyId, StatusUpdateDTO statusUpdate);
     CompanyAdminDTO updateCompanyAccountStatus(Long companyId, StatusUpdateDTO statusUpdate);
 
     Page<DriveAdminDTO> getAllDrives(String query, DriveStatus status, Pageable pageable);
