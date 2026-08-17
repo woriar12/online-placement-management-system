@@ -60,7 +60,6 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(UsernameNotFoundException.class)
     public ResponseEntity<ApiResponse<Void>> handleUsernameNotFound(UsernameNotFoundException ex) {
         log.warn("User not found: {}", ex.getMessage());
-        // Return generic message to prevent user enumeration
         return new ResponseEntity<>(
                 ApiResponse.error("Invalid email or password"),
                 HttpStatus.UNAUTHORIZED
