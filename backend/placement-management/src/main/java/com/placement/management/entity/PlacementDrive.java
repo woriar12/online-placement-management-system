@@ -7,10 +7,7 @@ import java.time.LocalDateTime;
 /**
  * Represents a placement drive organized by a {@link Company}.
  *
- * <p>A drive captures the full job description, eligibility requirements,
- * package details, schedule, and lifecycle status.
- *
- * @author Team — feature/company-drive
+ * @author Team — feature/company-drive & feature/application-interview
  */
 @Entity
 @Table(name = "placement_drives")
@@ -20,8 +17,7 @@ public class PlacementDrive {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    /** The company conducting this drive. */
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "company_id", nullable = false, foreignKey = @ForeignKey(name = "fk_drive_company"))
     private Company company;
 
@@ -37,25 +33,27 @@ public class PlacementDrive {
     @Column(name = "min_cgpa")
     private Double minCgpa;
 
-    /**
-     * Comma-separated list of eligible branches, e.g. "CSE,ECE,IT".
-     * Use {@code *} to indicate all branches are eligible.
-     */
     @Column(name = "allowed_branches", length = 500)
     private String allowedBranches;
 
-    /** CTC offered in Lakhs Per Annum (LPA). */
     @Column(name = "package_lpa")
     private Double packageLpa;
 
     @Column(name = "job_location", length = 200)
     private String jobLocation;
 
+    private String jobRole;
+    private String location;
+    private Double ctc;
+    private String eligibleBranches;
+
     @Column(name = "drive_date")
     private LocalDate driveDate;
 
     @Column(name = "application_deadline")
     private LocalDate applicationDeadline;
+
+    private LocalDateTime deadline;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
@@ -66,6 +64,31 @@ public class PlacementDrive {
 
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+
+    public PlacementDrive() {}
+
+    public PlacementDrive(Long id, String title, Company company, String jobRole, String jobDescription, String location, Double ctc, Double minCgpa, String eligibleBranches, LocalDateTime deadline, LocalDateTime driveDate, DriveStatus status) {
+        this.id = id;
+        this.title = title;
+        this.company = company;
+        this.jobRole = jobRole;
+        this.jobDescription = jobDescription;
+        this.location = location;
+        this.jobLocation = location;
+        this.ctc = ctc;
+        this.packageLpa = ctc;
+        this.minCgpa = minCgpa;
+        this.eligibleBranches = eligibleBranches;
+        this.allowedBranches = eligibleBranches;
+        this.deadline = deadline;
+        if (deadline != null) {
+            this.applicationDeadline = deadline.toLocalDate();
+        }
+        if (driveDate != null) {
+            this.driveDate = driveDate.toLocalDate();
+        }
+        this.status = status;
+    }
 
     @PrePersist
     protected void onCreate() {
@@ -78,10 +101,6 @@ public class PlacementDrive {
         updatedAt = LocalDateTime.now();
     }
 
-    // ── Constructors ─────────────────────────────────────────────────────────
-
-    public PlacementDrive() {}
-
     // ── Getters & Setters ────────────────────────────────────────────────────
 
     public Long getId() { return id; }
@@ -93,6 +112,9 @@ public class PlacementDrive {
     public String getTitle() { return title; }
     public void setTitle(String title) { this.title = title; }
 
+    public String getJobRole() { return jobRole != null ? jobRole : title; }
+    public void setJobRole(String jobRole) { this.jobRole = jobRole; }
+
     public String getJobDescription() { return jobDescription; }
     public void setJobDescription(String jobDescription) { this.jobDescription = jobDescription; }
 
@@ -102,20 +124,32 @@ public class PlacementDrive {
     public Double getMinCgpa() { return minCgpa; }
     public void setMinCgpa(Double minCgpa) { this.minCgpa = minCgpa; }
 
-    public String getAllowedBranches() { return allowedBranches; }
+    public String getAllowedBranches() { return allowedBranches != null ? allowedBranches : eligibleBranches; }
     public void setAllowedBranches(String allowedBranches) { this.allowedBranches = allowedBranches; }
 
-    public Double getPackageLpa() { return packageLpa; }
+    public String getEligibleBranches() { return eligibleBranches != null ? eligibleBranches : allowedBranches; }
+    public void setEligibleBranches(String eligibleBranches) { this.eligibleBranches = eligibleBranches; }
+
+    public Double getPackageLpa() { return packageLpa != null ? packageLpa : ctc; }
     public void setPackageLpa(Double packageLpa) { this.packageLpa = packageLpa; }
 
-    public String getJobLocation() { return jobLocation; }
+    public Double getCtc() { return ctc != null ? ctc : packageLpa; }
+    public void setCtc(Double ctc) { this.ctc = ctc; }
+
+    public String getJobLocation() { return jobLocation != null ? jobLocation : location; }
     public void setJobLocation(String jobLocation) { this.jobLocation = jobLocation; }
+
+    public String getLocation() { return location != null ? location : jobLocation; }
+    public void setLocation(String location) { this.location = location; }
 
     public LocalDate getDriveDate() { return driveDate; }
     public void setDriveDate(LocalDate driveDate) { this.driveDate = driveDate; }
 
     public LocalDate getApplicationDeadline() { return applicationDeadline; }
     public void setApplicationDeadline(LocalDate applicationDeadline) { this.applicationDeadline = applicationDeadline; }
+
+    public LocalDateTime getDeadline() { return deadline; }
+    public void setDeadline(LocalDateTime deadline) { this.deadline = deadline; }
 
     public DriveStatus getStatus() { return status; }
     public void setStatus(DriveStatus status) { this.status = status; }

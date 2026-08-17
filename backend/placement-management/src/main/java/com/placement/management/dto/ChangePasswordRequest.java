@@ -6,15 +6,14 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-
 /**
  * Request payload for changing the authenticated user's password.
  *
  * @author feature/auth
  */
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class ChangePasswordRequest {
 
     @NotBlank(message = "Current password is required")
@@ -23,13 +22,8 @@ public class ChangePasswordRequest {
     @NotBlank(message = "New password is required")
     @Size(min = 6, message = "New password must be at least 6 characters")
     private String newPassword;
-    @Size(min = 8, message = "New password must be at least 8 characters")
-    private String newPassword;
 
-    @NotBlank(message = "Confirm password is required")
     private String confirmPassword;
-
-    // ── Getters & Setters ────────────────────────────────────────────
 
     public String getCurrentPassword() { return currentPassword; }
     public void setCurrentPassword(String currentPassword) { this.currentPassword = currentPassword; }

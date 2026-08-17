@@ -18,12 +18,6 @@ import org.springframework.web.cors.CorsConfigurationSource;
 /**
  * Security configuration for Spring Security + JWT authentication.
  *
- * <p>Configures stateless session management, CORS integration, JSON error handlers,
- * and public/protected endpoint authorization rules.
- *
- * <p>Role-based access on individual endpoints is enforced via
- * {@code @PreAuthorize} annotations (enabled by {@link EnableMethodSecurity}).
- *
  * @author Team Leader / feature/auth
  */
 @Configuration
@@ -74,6 +68,8 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/auth/**",
                                 "/public/**",
+                                "/applications/**",
+                                "/interviews/**",
                                 "/v3/api-docs/**",
                                 "/swagger-ui/**",
                                 "/actuator/health"

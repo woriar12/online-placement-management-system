@@ -14,46 +14,21 @@ import java.util.List;
 /**
  * JPA repository for {@link PlacementDrive} entities.
  *
- * @author Team — feature/company-drive
+ * @author Team — feature/company-drive & feature/application-interview
  */
 @Repository
 public interface PlacementDriveRepository extends JpaRepository<PlacementDrive, Long> {
 
-    /**
-     * Fetches paginated drives for a specific company.
-     *
-     * @param companyId the company's primary key
-     * @param pageable  pagination/sorting parameters
-     * @return page of drives belonging to the company
-     */
+    List<PlacementDrive> findByStatus(DriveStatus status);
+
+    List<PlacementDrive> findByCompanyId(Long companyId);
+
     Page<PlacementDrive> findByCompanyId(Long companyId, Pageable pageable);
 
-    /**
-     * Fetches paginated drives filtered by status.
-     *
-     * @param status   drive lifecycle status
-     * @param pageable pagination/sorting parameters
-     * @return page of drives matching the status
-     */
     Page<PlacementDrive> findByStatus(DriveStatus status, Pageable pageable);
 
-    /**
-     * Fetches all drives for a company with a specific status (non-paginated).
-     *
-     * @param companyId the company's primary key
-     * @param status    drive status filter
-     * @return list of matching drives
-     */
     List<PlacementDrive> findByCompanyIdAndStatus(Long companyId, DriveStatus status);
 
-    /**
-     * Fetches paginated drives with optional status filter.
-     * When {@code status} is null, all drives are returned.
-     *
-     * @param status   optional status filter (null = all statuses)
-     * @param pageable pagination/sorting parameters
-     * @return page of drives
-     */
     @Query("SELECT d FROM PlacementDrive d WHERE (:status IS NULL OR d.status = :status) ORDER BY d.createdAt DESC")
     Page<PlacementDrive> findAllByStatusOptional(@Param("status") DriveStatus status, Pageable pageable);
 }

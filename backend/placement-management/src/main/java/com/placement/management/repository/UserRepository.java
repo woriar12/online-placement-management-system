@@ -9,24 +9,16 @@ import java.util.Optional;
 /**
  * Spring Data JPA repository for {@link User} entities.
  *
- * @author feature/auth
+ * @author feature/auth & feature/application-interview
  */
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
 
-    /**
-     * Finds a user by their email address (used as the login identifier).
-     *
-     * @param email the user's email address
-     * @return an {@link Optional} containing the user if found
-     */
     Optional<User> findByEmail(String email);
 
-    /**
-     * Checks whether a user with the given email already exists.
-     *
-     * @param email the email to check
-     * @return {@code true} if a user with this email exists
-     */
+    Optional<User> findByUsername(String username);
+
+    boolean existsByUsername(String username);
+
     boolean existsByEmail(String email);
 }

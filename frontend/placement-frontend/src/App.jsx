@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Routes, Route, Link, NavLink, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -23,6 +23,12 @@ import DriveListPage from './pages/drives/DriveListPage';
 import DriveFormPage from './pages/drives/DriveFormPage';
 import DriveDetailPage from './pages/drives/DriveDetailPage';
 
+// Application & Interview pages
+import DriveExplorerPage from './pages/DriveExplorerPage';
+import StudentApplicationsPage from './pages/StudentApplicationsPage';
+import ShortlistingManagementPage from './pages/ShortlistingManagementPage';
+import InterviewManagementPage from './pages/InterviewManagementPage';
+
 // Student pages
 import StudentDashboardPage from './pages/StudentDashboardPage';
 import StudentProfilePage from './pages/StudentProfilePage';
@@ -44,7 +50,7 @@ const styles = {
   header: {
     backgroundColor: '#1e293b',
     borderBottom: '1px solid #334155',
-    padding: '0 2rem',
+    padding: '0 1.5rem',
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
@@ -69,6 +75,7 @@ const styles = {
     display: 'flex',
     alignItems: 'center',
     gap: '0.25rem',
+    flexWrap: 'wrap',
   },
   main: {
     flex: 1,
@@ -98,8 +105,8 @@ function NavItem({ to, label, id }) {
         color: isActive ? '#38bdf8' : '#94a3b8',
         textDecoration: 'none',
         fontWeight: 600,
-        fontSize: '0.88rem',
-        padding: '0.4rem 0.75rem',
+        fontSize: '0.85rem',
+        padding: '0.4rem 0.65rem',
         borderRadius: '0.5rem',
         backgroundColor: isActive ? 'rgba(56,189,248,0.08)' : 'transparent',
         transition: 'all 0.15s',
@@ -133,9 +140,12 @@ export default function App() {
             <NavItem to="/"                  label="Home"              id="nav-home" />
             <NavItem to="/companies"         label="🏢 Companies"      id="nav-companies" />
             <NavItem to="/drives"            label="📋 Drives"         id="nav-drives" />
+            <NavItem to="/drives-explorer"   label="🔍 Explore Drives" id="nav-explorer" />
+            <NavItem to="/my-applications"   label="📝 Applications"   id="nav-my-apps" />
+            <NavItem to="/shortlisting"      label="📊 Shortlisting"   id="nav-shortlisting" />
+            <NavItem to="/interviews"        label="📅 Interviews"     id="nav-interviews" />
             <NavItem to="/student/dashboard" label="🎓 Student Portal" id="nav-student" />
             <NavItem to="/login"             label="Login"             id="nav-login" />
-            <NavItem to="/register"          label="Register"          id="nav-register" />
           </nav>
         </header>
 
@@ -163,6 +173,12 @@ export default function App() {
             <Route path="/drives/:id"         element={<DriveDetailPage />} />
             <Route path="/drives/:id/edit"    element={<DriveFormPage />} />
 
+            {/* Application & Interview Management */}
+            <Route path="/drives-explorer" element={<DriveExplorerPage />} />
+            <Route path="/my-applications" element={<StudentApplicationsPage />} />
+            <Route path="/shortlisting"    element={<ShortlistingManagementPage />} />
+            <Route path="/interviews"       element={<InterviewManagementPage />} />
+
             {/* Student Module Routes */}
             <Route path="/student/dashboard" element={<StudentDashboardPage />} />
             <Route path="/student/profile"   element={<StudentProfilePage />} />
@@ -171,7 +187,7 @@ export default function App() {
             <Route
               path="/dashboard/student"
               element={
-                <ProtectedRoute allowedRoles={['STUDENT']}>
+                <ProtectedRoute allowedRoles={['STUDENT', 'ROLE_STUDENT']}>
                   <StudentDashboard />
                 </ProtectedRoute>
               }
@@ -179,7 +195,7 @@ export default function App() {
             <Route
               path="/dashboard/admin"
               element={
-                <ProtectedRoute allowedRoles={['ADMIN']}>
+                <ProtectedRoute allowedRoles={['ADMIN', 'ROLE_ADMIN']}>
                   <AdminDashboard />
                 </ProtectedRoute>
               }
@@ -201,7 +217,7 @@ export default function App() {
 
         {/* Footer */}
         <footer style={styles.footer}>
-          © {new Date().getFullYear()} Online Placement Management System · Student Module
+          © {new Date().getFullYear()} Online Placement Management System · Synced All Modules
         </footer>
       </div>
     </AuthProvider>
@@ -213,25 +229,29 @@ function HomePage() {
   const cards = [
     { to: '/companies',         emoji: '🏢', title: 'Companies',         desc: 'Add, edit, and manage recruiting company profiles.' },
     { to: '/drives',            emoji: '📋', title: 'Placement Drives',  desc: 'Create and manage campus placement drives.' },
-    { to: '/student/dashboard', emoji: '🎓', title: 'Student Portal',   desc: 'Access your student dashboard and applications.' },
+    { to: '/drives-explorer',   emoji: '🔍', title: 'Explore Drives',    desc: 'Browse drives, view eligibility, and apply.' },
+    { to: '/my-applications',   emoji: '📝', title: 'My Applications',   desc: 'Track your drive applications and status.' },
+    { to: '/shortlisting',      emoji: '📊', title: 'Shortlisting',      desc: 'Review applications and update shortlisting status.' },
+    { to: '/interviews',        emoji: '📅', title: 'Interviews',        desc: 'Schedule and manage interview rounds.' },
+    { to: '/student/dashboard', emoji: '🎓', title: 'Student Portal',   desc: 'Access your student dashboard and profile.' },
     { to: '/login',             emoji: '🔑', title: 'Portal Login',      desc: 'Sign in to access your account.' },
   ];
 
   return (
     <div>
       {/* Hero */}
-      <div style={{ textAlign: 'center', padding: '3rem 0 3.5rem' }}>
+      <div style={{ textAlign: 'center', padding: '2.5rem 0 3rem' }}>
         <div style={{ fontSize: '3.5rem', marginBottom: '1rem' }}>🎓</div>
         <h1 style={{ margin: '0 0 0.75rem', fontSize: '2.25rem', fontWeight: 900, color: '#f1f5f9', letterSpacing: '-0.02em' }}>
           Online Placement Management System
         </h1>
-        <p style={{ margin: 0, color: '#64748b', fontSize: '1.05rem', maxWidth: '500px', marginInline: 'auto', lineHeight: 1.6 }}>
-          Streamline campus recruitment — student profiles, drive registrations, and application tracking.
+        <p style={{ margin: 0, color: '#64748b', fontSize: '1.05rem', maxWidth: '540px', marginInline: 'auto', lineHeight: 1.6 }}>
+          Complete campus recruitment solution — authentication, company management, placement drives, student profiles, applications & interview scheduling.
         </p>
       </div>
 
       {/* Quick-access cards */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(230px, 1fr))', gap: '1.25rem', maxWidth: '960px', margin: '0 auto' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1.25rem', maxWidth: '1000px', margin: '0 auto' }}>
         {cards.map((card) => (
           <Link
             key={card.to}
@@ -241,14 +261,14 @@ function HomePage() {
               backgroundColor: '#1e293b',
               border: '1px solid #334155',
               borderRadius: '0.875rem',
-              padding: '1.75rem',
+              padding: '1.5rem',
               textDecoration: 'none',
               transition: 'transform 0.2s, box-shadow 0.2s, border-color 0.2s',
             }}
           >
-            <div style={{ fontSize: '2.25rem', marginBottom: '0.875rem' }}>{card.emoji}</div>
-            <h2 style={{ margin: '0 0 0.5rem', fontSize: '1.1rem', fontWeight: 700, color: '#f1f5f9' }}>{card.title}</h2>
-            <p style={{ margin: 0, color: '#64748b', fontSize: '0.88rem', lineHeight: 1.6 }}>{card.desc}</p>
+            <div style={{ fontSize: '2rem', marginBottom: '0.75rem' }}>{card.emoji}</div>
+            <h2 style={{ margin: '0 0 0.4rem', fontSize: '1.05rem', fontWeight: 700, color: '#f1f5f9' }}>{card.title}</h2>
+            <p style={{ margin: 0, color: '#64748b', fontSize: '0.85rem', lineHeight: 1.5 }}>{card.desc}</p>
           </Link>
         ))}
       </div>

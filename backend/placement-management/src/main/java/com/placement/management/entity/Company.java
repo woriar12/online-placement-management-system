@@ -6,10 +6,7 @@ import java.time.LocalDateTime;
 /**
  * Represents a recruiting company in the placement system.
  *
- * <p>Stores the company profile information including contact details,
- * location, and active status. A company can have multiple {@link PlacementDrive}s.
- *
- * @author Team — feature/company-drive
+ * @author Team — feature/company-drive & feature/application-interview
  */
 @Entity
 @Table(name = "companies", uniqueConstraints = {
@@ -54,6 +51,9 @@ public class Company {
     @Column(length = 100)
     private String country;
 
+    private String location;
+    private String hrContactEmail;
+
     @Column(nullable = false)
     private boolean active = true;
 
@@ -63,20 +63,31 @@ public class Company {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
+    public Company() {}
+
+    public Company(Long id, String companyName, String industry, String website, String location, String hrContactEmail) {
+        this.id = id;
+        this.name = companyName;
+        this.industry = industry;
+        this.website = website;
+        this.location = location;
+        this.hrContactEmail = hrContactEmail;
+        this.email = hrContactEmail;
+    }
+
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
         updatedAt = LocalDateTime.now();
+        if (this.name == null && this.email != null) {
+            this.name = this.email;
+        }
     }
 
     @PreUpdate
     protected void onUpdate() {
         updatedAt = LocalDateTime.now();
     }
-
-    // ── Constructors ─────────────────────────────────────────────────────────
-
-    public Company() {}
 
     // ── Getters & Setters ────────────────────────────────────────────────────
 
@@ -85,6 +96,9 @@ public class Company {
 
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
+
+    public String getCompanyName() { return name != null ? name : email; }
+    public void setCompanyName(String companyName) { this.name = companyName; }
 
     public String getIndustry() { return industry; }
     public void setIndustry(String industry) { this.industry = industry; }
@@ -115,6 +129,12 @@ public class Company {
 
     public String getCountry() { return country; }
     public void setCountry(String country) { this.country = country; }
+
+    public String getLocation() { return location != null ? location : city; }
+    public void setLocation(String location) { this.location = location; }
+
+    public String getHrContactEmail() { return hrContactEmail != null ? hrContactEmail : email; }
+    public void setHrContactEmail(String hrContactEmail) { this.hrContactEmail = hrContactEmail; }
 
     public boolean isActive() { return active; }
     public void setActive(boolean active) { this.active = active; }
