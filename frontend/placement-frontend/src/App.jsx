@@ -3,6 +3,8 @@ import { Routes, Route, Link } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import LoginPage from './pages/LoginPage';
 import NotFoundPage from './pages/NotFoundPage';
+import StudentDashboardPage from './pages/StudentDashboardPage';
+import StudentProfilePage from './pages/StudentProfilePage';
 
 /**
  * Basic CSS styles for initial application scaffold setup.
@@ -90,6 +92,8 @@ export default function App() {
           <nav style={appStyles.nav}>
             <Link to="/" style={appStyles.navLink}>Home</Link>
             <Link to="/login" style={appStyles.navLink}>Login</Link>
+            <Link to="/student/dashboard" style={appStyles.navLink}>Student Dashboard</Link>
+            <Link to="/student/profile" style={appStyles.navLink}>My Profile</Link>
           </nav>
         </header>
 
@@ -97,6 +101,9 @@ export default function App() {
           <Routes>
             <Route path="/" element={<HomePlaceholder />} />
             <Route path="/login" element={<LoginPage />} />
+            {/* ── Student Module Routes ── */}
+            <Route path="/student/dashboard" element={<StudentDashboardPage />} />
+            <Route path="/student/profile" element={<StudentProfilePage />} />
             <Route path="*" element={<NotFoundPage />} />
           </Routes>
         </main>
