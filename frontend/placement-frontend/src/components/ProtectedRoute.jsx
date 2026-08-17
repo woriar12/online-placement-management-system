@@ -3,6 +3,13 @@ import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 /**
+ * Higher-order component protecting routes requiring authentication or specific roles.
+ *
+ * @param {Object} props
+ * @param {React.ReactNode} props.children
+ * @param {string[]} [props.roles] Optional array of allowed roles (e.g. ['ADMIN', 'PLACEMENT_OFFICER'])
+ */
+export default function ProtectedRoute({ children, roles }) {
  * Wraps routes that require authentication.
  *
  * - If loading (restoring session from localStorage) — shows a spinner
@@ -18,6 +25,8 @@ export default function ProtectedRoute({ children, allowedRoles }) {
 
   if (loading) {
     return (
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '50vh' }}>
+        <div style={{ color: '#94a3b8', fontSize: '1rem' }}>Loading session…</div>
       <div style={{
         minHeight: '100vh',
         display: 'flex',
@@ -46,6 +55,7 @@ export default function ProtectedRoute({ children, allowedRoles }) {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
+  if (roles && roles.length > 0 && user && !roles.includes(user.role)) {
   if (allowedRoles && allowedRoles.length > 0 && !allowedRoles.includes(user?.role)) {
     return <Navigate to="/unauthorized" replace />;
   }

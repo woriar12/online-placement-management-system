@@ -64,6 +64,8 @@ public class AuthServiceImpl implements AuthService {
         this.emailService = emailService;
     }
 
+    @Override
+    public AuthResponse register(RegisterRequest request) {
     // ── Register ─────────────────────────────────────────────────────
 
     @Override
@@ -92,6 +94,9 @@ public class AuthServiceImpl implements AuthService {
         return buildAuthResponse(user);
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public AuthResponse login(LoginRequest request) {
     // ── Login ────────────────────────────────────────────────────────
 
     @Override
@@ -135,6 +140,9 @@ public class AuthServiceImpl implements AuthService {
     public void forgotPassword(ForgotPasswordRequest request) {
         String email = request.getEmail().toLowerCase().trim();
 
+        userRepository.findByEmail(email).ifPresent(user -> {
+            tokenRepository.deleteByUser(user);
+
         // Always return success to prevent email enumeration attacks
         userRepository.findByEmail(email).ifPresent(user -> {
             // Delete any existing tokens for this user
@@ -154,6 +162,8 @@ public class AuthServiceImpl implements AuthService {
         });
     }
 
+    @Override
+    public void resetPassword(ResetPasswordRequest request) {
     // ── Reset Password ───────────────────────────────────────────────
 
     @Override
@@ -183,6 +193,8 @@ public class AuthServiceImpl implements AuthService {
         log.info("Password successfully reset for user: {}", user.getEmail());
     }
 
+    @Override
+    public void changePassword(String email, ChangePasswordRequest request) {
     // ── Change Password ──────────────────────────────────────────────
 
     @Override
@@ -201,6 +213,11 @@ public class AuthServiceImpl implements AuthService {
         user.setPassword(passwordEncoder.encode(request.getNewPassword()));
         userRepository.save(user);
         log.info("Password changed for user: {}", email);
+    }
+
+    @Override
+    public void logout(String token) {
+        log.info("User logout — token invalidation delegated to client.");
     }
 
     // ── Logout ───────────────────────────────────────────────────────
@@ -225,6 +242,7 @@ public class AuthServiceImpl implements AuthService {
         UserInfoDto userInfo = new UserInfoDto(
                 user.getId(), user.getName(), user.getEmail(), user.getRole());
 
+        return new AuthResponse(accessToken, refreshToken, "Bearer", userInfo);
         // jwtConfig not directly accessible here; expiresIn comes from the property binding
         // Using a sensible default (24h = 86400s) — token carries its own expiry claim anyway.
         return new AuthResponse(accessToken, refreshToken, 86400L, userInfo);
