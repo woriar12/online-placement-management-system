@@ -1,42 +1,60 @@
 import React from 'react';
 
-const statusStyles = {
+const STATUS_CONFIG = {
+  // Drive Lifecycle Statuses
+  UPCOMING: { label: 'Upcoming', bg: 'rgba(59, 130, 246, 0.15)', color: '#60a5fa', border: 'rgba(59, 130, 246, 0.3)', dot: '#60a5fa' },
+  ACTIVE:   { label: 'Active',   bg: 'rgba(34, 197, 94, 0.15)',  color: '#4ade80', border: 'rgba(34, 197, 94, 0.3)',  dot: '#4ade80' },
+  CLOSED:   { label: 'Closed',   bg: 'rgba(156, 163, 175, 0.15)', color: '#9ca3af', border: 'rgba(156, 163, 175, 0.3)', dot: '#9ca3af' },
+
   // Application Statuses
-  APPLIED: { bg: '#eff6ff', color: '#1d4ed8', border: '#bfdbfe', label: 'Applied' },
-  UNDER_REVIEW: { bg: '#fef3c7', color: '#b45309', border: '#fde68a', label: 'Under Review' },
-  SHORTLISTED: { bg: '#f0fdf4', color: '#15803d', border: '#bbf7d0', label: 'Shortlisted' },
-  INTERVIEW_SCHEDULED: { bg: '#f0f9ff', color: '#0369a1', border: '#bae6fd', label: 'Interview Scheduled' },
-  SELECTED: { bg: '#ecfdf5', color: '#047857', border: '#a7f3d0', label: 'Selected / Offer' },
-  REJECTED: { bg: '#fef2f2', color: '#b91c1c', border: '#fecaca', label: 'Rejected' },
-  WITHDRAWN: { bg: '#f3f4f6', color: '#4b5563', border: '#e5e7eb', label: 'Withdrawn' },
+  APPLIED:             { label: 'Applied',             bg: 'rgba(59, 130, 246, 0.15)', color: '#60a5fa', border: 'rgba(59, 130, 246, 0.3)', dot: '#60a5fa' },
+  UNDER_REVIEW:        { label: 'Under Review',        bg: 'rgba(245, 158, 11, 0.15)', color: '#fbbf24', border: 'rgba(245, 158, 11, 0.3)', dot: '#fbbf24' },
+  SHORTLISTED:         { label: 'Shortlisted',         bg: 'rgba(139, 92, 246, 0.15)', color: '#a78bfa', border: 'rgba(139, 92, 246, 0.3)', dot: '#a78bfa' },
+  INTERVIEW_SCHEDULED: { label: 'Interview Scheduled', bg: 'rgba(14, 165, 233, 0.15)', color: '#38bdf8', border: 'rgba(14, 165, 233, 0.3)', dot: '#38bdf8' },
+  SELECTED:            { label: 'Selected / Offer',    bg: 'rgba(16, 185, 129, 0.15)', color: '#34d399', border: 'rgba(16, 185, 129, 0.3)', dot: '#34d399' },
+  REJECTED:            { label: 'Rejected',            bg: 'rgba(239, 68, 68, 0.15)',  color: '#f87171', border: 'rgba(239, 68, 68, 0.3)',  dot: '#f87171' },
+  WITHDRAWN:           { label: 'Withdrawn',           bg: 'rgba(100, 116, 139, 0.15)', color: '#94a3b8', border: 'rgba(100, 116, 139, 0.3)', dot: '#94a3b8' },
 
   // Interview Statuses
-  SCHEDULED: { bg: '#e0f2fe', color: '#0284c7', border: '#bae6fd', label: 'Scheduled' },
-  PASSED: { bg: '#dcfce7', color: '#16a34a', border: '#86efac', label: 'Passed Round' },
-  FAILED: { bg: '#fee2e2', color: '#dc2626', border: '#fca5a5', label: 'Failed Round' },
-  CANCELLED: { bg: '#f3f4f6', color: '#6b7280', border: '#d1d5db', label: 'Cancelled' },
-  ABSENT: { bg: '#fff7ed', color: '#c2410c', border: '#ffedd5', label: 'Absent' }
+  SCHEDULED: { label: 'Scheduled',    bg: 'rgba(14, 165, 233, 0.15)', color: '#38bdf8', border: 'rgba(14, 165, 233, 0.3)', dot: '#38bdf8' },
+  PASSED:    { label: 'Passed Round', bg: 'rgba(16, 185, 129, 0.15)', color: '#34d399', border: 'rgba(16, 185, 129, 0.3)', dot: '#34d399' },
+  FAILED:    { label: 'Failed Round', bg: 'rgba(239, 68, 68, 0.15)',  color: '#f87171', border: 'rgba(239, 68, 68, 0.3)',  dot: '#f87171' },
+  CANCELLED: { label: 'Cancelled',    bg: 'rgba(100, 116, 139, 0.15)', color: '#94a3b8', border: 'rgba(100, 116, 139, 0.3)', dot: '#94a3b8' },
+  ABSENT:    { label: 'Absent',       bg: 'rgba(245, 158, 11, 0.15)', color: '#fbbf24', border: 'rgba(245, 158, 11, 0.3)', dot: '#fbbf24' },
 };
 
-export default function StatusBadge({ status, style = {} }) {
-  const config = statusStyles[status] || { bg: '#f3f4f6', color: '#374151', border: '#d1d5db', label: status || 'Unknown' };
+/**
+ * Colored pill badge for drive, application, and interview statuses.
+ */
+export default function StatusBadge({ status, size = 'md', style = {} }) {
+  const config = STATUS_CONFIG[status] || {
+    label: status || 'Unknown',
+    bg: 'rgba(100, 116, 139, 0.15)',
+    color: '#94a3b8',
+    border: 'rgba(100, 116, 139, 0.3)',
+    dot: '#94a3b8',
+  };
+
+  const padding = size === 'sm' ? '0.2rem 0.55rem' : '0.3rem 0.75rem';
+  const fontSize = size === 'sm' ? '0.7rem' : '0.75rem';
 
   return (
     <span
       style={{
         display: 'inline-flex',
         alignItems: 'center',
-        gap: '0.35rem',
-        padding: '0.25rem 0.65rem',
-        borderRadius: '9999px',
-        fontSize: '0.75rem',
-        fontWeight: '600',
-        letterSpacing: '0.025em',
+        gap: '0.4rem',
         backgroundColor: config.bg,
         color: config.color,
         border: `1px solid ${config.border}`,
-        boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
-        ...style
+        padding,
+        borderRadius: '9999px',
+        fontSize,
+        fontWeight: 700,
+        letterSpacing: '0.04em',
+        textTransform: 'uppercase',
+        whiteSpace: 'nowrap',
+        ...style,
       }}
     >
       <span
@@ -44,7 +62,8 @@ export default function StatusBadge({ status, style = {} }) {
           width: '6px',
           height: '6px',
           borderRadius: '50%',
-          backgroundColor: config.color
+          backgroundColor: config.dot,
+          flexShrink: 0,
         }}
       />
       {config.label}
