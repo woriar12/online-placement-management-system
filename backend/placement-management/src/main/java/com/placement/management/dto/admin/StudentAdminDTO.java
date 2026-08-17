@@ -1,6 +1,5 @@
 package com.placement.management.dto.admin;
 
-import com.placement.management.entity.enums.AccountStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -22,6 +21,5 @@ public class StudentAdminDTO {
     private String resumeUrl;
     private String phoneNumber;
     private Boolean isEligible;
-    private AccountStatus accountStatus;
     private String placementStatus; // e.g. "PLACED", "UNPLACED", "APPLIED"
 }

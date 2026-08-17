@@ -59,7 +59,7 @@ if not "%JAVA_HOME%"=="" (
     set "JAVACMD=java"
 )
 
-"%JAVACMD%" -classpath %WRAPPER_JAR% %WRAPPER_LAUNCHER% %*
+"%JAVACMD%" "-Dmaven.multiModuleProjectDirectory=%MAVEN_BASEDIR%" -classpath %WRAPPER_JAR% %WRAPPER_LAUNCHER% %*
 if ERRORLEVEL 1 goto error
 goto end
 

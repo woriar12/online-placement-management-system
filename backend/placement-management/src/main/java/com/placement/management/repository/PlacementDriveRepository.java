@@ -1,7 +1,7 @@
 package com.placement.management.repository;
 
+import com.placement.management.entity.DriveStatus;
 import com.placement.management.entity.PlacementDrive;
-import com.placement.management.entity.enums.DriveStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -11,17 +11,28 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+/**
+ * JPA repository for {@link PlacementDrive} entities.
+ *
+ * @author Team — Admin Module, Company & Placement Drive, Application & Interview
+ */
 @Repository
 public interface PlacementDriveRepository extends JpaRepository<PlacementDrive, Long> {
 
-    @Query("SELECT d FROM PlacementDrive d WHERE " +
-           "(:query IS NULL OR LOWER(d.jobTitle) LIKE LOWER(CONCAT('%', :query, '%')) OR LOWER(d.company.companyName) LIKE LOWER(CONCAT('%', :query, '%'))) AND " +
-           "(:status IS NULL OR d.status = :status)")
-    Page<PlacementDrive> searchDrives(@Param("query") String query, @Param("status") DriveStatus status, Pageable pageable);
+    List<PlacementDrive> findByStatus(DriveStatus status);
+
+    List<PlacementDrive> findByCompanyId(Long companyId);
+
+    Page<PlacementDrive> findByCompanyId(Long companyId, Pageable pageable);
+
+    Page<PlacementDrive> findByStatus(DriveStatus status, Pageable pageable);
+
+    List<PlacementDrive> findByCompanyIdAndStatus(Long companyId, DriveStatus status);
+
+    @Query("SELECT d FROM PlacementDrive d WHERE (:status IS NULL OR d.status = :status) ORDER BY d.createdAt DESC")
+    Page<PlacementDrive> findAllByStatusOptional(@Param("status") DriveStatus status, Pageable pageable);
 
     List<PlacementDrive> findTop5ByOrderByCreatedAtDesc();
-
-    List<PlacementDrive> findTop5ByStatusOrderByDriveDateAsc(DriveStatus status);
 
     long countByStatus(DriveStatus status);
 }
