@@ -1,108 +1,95 @@
-import React from 'react';
-import { Routes, Route, Link } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Routes, Route, NavLink } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import LoginPage from './pages/LoginPage';
 import NotFoundPage from './pages/NotFoundPage';
-
-/**
- * Basic CSS styles for initial application scaffold setup.
- */
-const appStyles = {
-  container: {
-    fontFamily: "'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
-    minHeight: '100vh',
-    display: 'flex',
-    flexDirection: 'column',
-    backgroundColor: '#f8fafc',
-    color: '#0f172a',
-    margin: 0,
-  },
-  header: {
-    backgroundColor: '#1e293b',
-    color: '#ffffff',
-    padding: '1rem 2rem',
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-  },
-  nav: {
-    display: 'flex',
-    gap: '1.5rem',
-  },
-  navLink: {
-    color: '#38bdf8',
-    textDecoration: 'none',
-    fontWeight: '500',
-  },
-  main: {
-    flex: 1,
-    padding: '2rem',
-    maxWidth: '1200px',
-    margin: '0 auto',
-    width: '100%',
-  },
-  footer: {
-    backgroundColor: '#0f172a',
-    color: '#94a3b8',
-    textAlign: 'center',
-    padding: '1rem',
-    fontSize: '0.875rem',
-  },
-  badge: {
-    display: 'inline-block',
-    backgroundColor: '#3b82f6',
-    color: '#ffffff',
-    padding: '0.25rem 0.5rem',
-    borderRadius: '0.25rem',
-    fontSize: '0.75rem',
-    fontWeight: '600',
-    textTransform: 'uppercase',
-  }
-};
-
-function HomePlaceholder() {
-  return (
-    <div style={{ backgroundColor: '#ffffff', padding: '2rem', borderRadius: '0.5rem', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem' }}>
-        <h2 style={{ margin: 0, color: '#1e293b' }}>Online Placement Management System</h2>
-        <span style={appStyles.badge}>System Scaffold Ready</span>
-      </div>
-      <p style={{ color: '#475569', lineHeight: 1.6 }}>
-        Base frontend application architecture established for team development.
-        Feature branches will build specific dashboards and modules.
-      </p>
-      <div style={{ marginTop: '1.5rem', padding: '1rem', backgroundColor: '#f1f5f9', borderRadius: '0.375rem', fontSize: '0.9rem' }}>
-        <strong>Team Note:</strong> Clone repository, create branch matching <code>feature/*</code> pattern, and contribute to your assigned module.
-      </div>
-    </div>
-  );
-}
+import DriveExplorerPage from './pages/DriveExplorerPage';
+import StudentApplicationsPage from './pages/StudentApplicationsPage';
+import ShortlistingManagementPage from './pages/ShortlistingManagementPage';
+import InterviewManagementPage from './pages/InterviewManagementPage';
 
 export default function App() {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  const closeMenu = () => setMobileMenuOpen(false);
+
   return (
     <AuthProvider>
-      <div style={appStyles.container}>
-        <header style={appStyles.header}>
-          <h1 style={{ margin: 0, fontSize: '1.25rem', fontWeight: '600' }}>
-            Placement Management System
-          </h1>
-          <nav style={appStyles.nav}>
-            <Link to="/" style={appStyles.navLink}>Home</Link>
-            <Link to="/login" style={appStyles.navLink}>Login</Link>
+      <div className="app-container">
+        {/* Navigation Bar */}
+        <header className="navbar">
+          <div className="nav-brand">
+            <div className="brand-logo">P</div>
+            <h1 className="brand-title">OPMS Placement Portal</h1>
+          </div>
+
+          {/* Desktop Navigation Links */}
+          <nav className="nav-links-desktop">
+            <NavLink to="/" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
+              Placement Drives
+            </NavLink>
+            <NavLink to="/my-applications" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
+              My Applications
+            </NavLink>
+            <div className="nav-divider" />
+            <NavLink to="/admin/shortlisting" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
+              Shortlisting Portal
+            </NavLink>
+            <NavLink to="/admin/interviews" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
+              Interview Evaluator
+            </NavLink>
+            <NavLink to="/login" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
+              Login
+            </NavLink>
           </nav>
+
+          {/* Mobile Hamburger Toggle Button */}
+          <button
+            className="mobile-menu-toggle"
+            aria-label="Toggle navigation menu"
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          >
+            {mobileMenuOpen ? '✕' : '☰'}
+          </button>
+
+          {/* Mobile Drawer Menu */}
+          {mobileMenuOpen && (
+            <div className="mobile-menu-drawer">
+              <NavLink to="/" onClick={closeMenu} className="mobile-nav-item">
+                🚀 Placement Drives
+              </NavLink>
+              <NavLink to="/my-applications" onClick={closeMenu} className="mobile-nav-item">
+                📋 My Applications
+              </NavLink>
+              <NavLink to="/admin/shortlisting" onClick={closeMenu} className="mobile-nav-item">
+                ⭐ Shortlisting Portal
+              </NavLink>
+              <NavLink to="/admin/interviews" onClick={closeMenu} className="mobile-nav-item">
+                🎯 Interview Evaluator
+              </NavLink>
+              <NavLink to="/login" onClick={closeMenu} className="mobile-nav-item">
+                🔑 Login
+              </NavLink>
+            </div>
+          )}
         </header>
 
-        <main style={appStyles.main}>
+        {/* Main Content Area */}
+        <main className="main-content">
           <Routes>
-            <Route path="/" element={<HomePlaceholder />} />
+            <Route path="/" element={<DriveExplorerPage />} />
+            <Route path="/drives" element={<DriveExplorerPage />} />
+            <Route path="/my-applications" element={<StudentApplicationsPage />} />
+            <Route path="/admin/shortlisting" element={<ShortlistingManagementPage />} />
+            <Route path="/admin/interviews" element={<InterviewManagementPage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="*" element={<NotFoundPage />} />
           </Routes>
         </main>
 
-        <footer style={appStyles.footer}>
-          &copy; {new Date().getFullYear()} Online Placement Management System Team. All rights reserved.
+        {/* Responsive Footer */}
+        <footer className="footer">
+          &copy; {new Date().getFullYear()} Online Placement Management System (OPMS) — Application & Interview Management.
         </footer>
       </div>
     </AuthProvider>
